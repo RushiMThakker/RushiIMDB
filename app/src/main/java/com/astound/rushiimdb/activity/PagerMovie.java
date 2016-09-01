@@ -71,15 +71,15 @@ public class PagerMovie extends Fragment
             @Override
             public void onLoadingStarted(String imageUri, View view)
             {
-                super.onLoadingStarted(imageUri, view);
+
                 progressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage)
             {
-                super.onLoadingComplete(imageUri, view, loadedImage);
-                progressBar.setVisibility(View.INVISIBLE);
+
+                progressBar.setVisibility(View.GONE);
             }
         });
         return v;

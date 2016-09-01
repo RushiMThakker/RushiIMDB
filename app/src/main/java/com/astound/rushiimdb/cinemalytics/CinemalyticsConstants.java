@@ -7,5 +7,5 @@ package com.astound.rushiimdb.cinemalytics;
 public class CinemalyticsConstants
 {
     public static String BASE_URL="http://api.cinemalytics.in/v2/";
-    public static String TOKEN="4A8C32A43DD146D667A48731F0EA7F4B";
+    public static String TOKEN="26544BBBFF73DF549E827089A2AC34D2";
 }
