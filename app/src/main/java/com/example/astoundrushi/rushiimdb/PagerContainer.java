@@ -51,6 +51,7 @@ public class PagerContainer extends RelativeLayout implements ViewPager.OnPageCh
 
     private ViewPager mPager;
     private TextView songName;
+    private RelativeLayout customViewPagerRelativeLayout;
     boolean mNeedsRedraw = false;
 
     public PagerContainer(Context context)
@@ -90,7 +91,6 @@ public class PagerContainer extends RelativeLayout implements ViewPager.OnPageCh
         {
             mPager = (ViewPager) getChildAt(0);
             mPager.setOnPageChangeListener(this);
-            songName=(TextView) getChildAt(1);
         } catch (Exception e)
         {
             throw new IllegalStateException("The root child of PagerContainer must be a ViewPager");

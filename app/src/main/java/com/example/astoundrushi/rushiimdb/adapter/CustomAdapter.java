@@ -4,11 +4,9 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.astoundrushi.rushiimdb.R;
@@ -35,7 +33,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Holder>
     public Holder onCreateViewHolder(ViewGroup parent, int viewType)
     {
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View v = inflater.inflate(R.layout.custom_row, null);
+        View v = inflater.inflate(R.layout.custom_viewpager_layout, null);
         Holder holder=new Holder(v);
         return holder;
     }
@@ -71,7 +69,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Holder>
             songName.setClickable(true);
             songName.setMovementMethod(LinkMovementMethod.getInstance());
 
-            songDuration = (TextView) itemView.findViewById(R.id.textSongDuration);
+            songDuration = (TextView) itemView.findViewById(R.id.textSongName);
         }
     }
 }

@@ -3,58 +3,42 @@ package com.example.astoundrushi.rushiimdb.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.transition.ChangeImageTransform;
-import android.transition.Fade;
-import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.astoundrushi.rushiimdb.PagerContainer;
 import com.example.astoundrushi.rushiimdb.R;
 import com.example.astoundrushi.rushiimdb.adapter.CustomAdapter;
+import com.example.astoundrushi.rushiimdb.adapter.MyActorsPagerAdapter;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsActorsByMovie;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsClient;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsConstants;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsInterface;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsMovieByYear;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsSongsByMovie;
-import com.google.api.services.youtube.YouTube;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
-import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,6 +55,7 @@ public class Movie extends AppCompatActivity implements AsyncResponse
     PagerContainer actorStripPager,songStripPager;
     ArrayList<Double> songsDuration;
     CinemalyticsInterface cinemalyticsInterface;
+    ArrayList<CinemalyticsActorsByMovie> movieActors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -192,6 +177,31 @@ public class Movie extends AppCompatActivity implements AsyncResponse
 
             }
         });
+
+
+        Call<ArrayList<CinemalyticsActorsByMovie>> callActorsByMovie=cinemalyticsInterface.getActorsOfMovie(selectedMovie.getId(),CinemalyticsConstants.TOKEN);
+        callActorsByMovie.enqueue(new Callback<ArrayList<CinemalyticsActorsByMovie>>()
+        {
+            @Override
+            public void onResponse(Call<ArrayList<CinemalyticsActorsByMovie>> call, Response<ArrayList<CinemalyticsActorsByMovie>> response)
+            {
+                movieActors = response.body();
+                actorStripPager = (PagerContainer) findViewById(R.id.pager_container_actors);
+                ViewPager pagerActors=actorStripPager.getViewPager();
+                PagerAdapter adapterActors= new MyActorsPagerAdapter(Movie.this,movieActors);
+                pagerActors.setAdapter(adapterActors);
+                pagerActors.setOffscreenPageLimit(adapterActors.getCount());
+                pagerActors.setPageMargin(15);
+                pagerActors.setClipChildren(false);
+
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<CinemalyticsActorsByMovie>> call, Throwable t)
+            {
+
+            }
+        });
     }
 
     private void generateYoutubeLinks(ArrayList<String> movieSongs)
@@ -222,6 +232,7 @@ public class Movie extends AppCompatActivity implements AsyncResponse
         if(output==true)
         {
             int i=0;
+
             for(String link:YoutubeSearch.LINKS)
             {
                 StringBuffer linkFormatter=new StringBuffer(link);
@@ -237,39 +248,20 @@ public class Movie extends AppCompatActivity implements AsyncResponse
             recyclerView.setAdapter(recyclerViewAdapter);*/
 
             songStripPager = (PagerContainer) findViewById(R.id.pager_container_songs);
-            actorStripPager = (PagerContainer) findViewById(R.id.pager_container_actors);
 
             ViewPager pagerSongs = songStripPager.getViewPager();
-            ViewPager pagerActors=actorStripPager.getViewPager();
 
             PagerAdapter adapterSongs = new MySongsPagerAdapter(Movie.this);
-            PagerAdapter adapterActors= new MyActorsPagerAdapter(Movie.this);
             pagerSongs.setAdapter(adapterSongs);
             //Necessary or the pagerSongs will only have one extra page to show
             // make this at least however many pages you can see
             pagerSongs.setOffscreenPageLimit(adapterSongs.getCount());
             //A little space between pages
             pagerSongs.setPageMargin(15);
-
             //If hardware acceleration is enabled, you should also remove
             // clipping on the pagerSongs for its children.
             pagerSongs.setClipChildren(false);
 
-            Call<ArrayList<CinemalyticsActorsByMovie>> callActorsByMovie=cinemalyticsInterface.getActorsOfMovie(selectedMovie.getId(),CinemalyticsConstants.TOKEN);
-            callActorsByMovie.enqueue(new Callback<ArrayList<CinemalyticsActorsByMovie>>()
-            {
-                @Override
-                public void onResponse(Call<ArrayList<CinemalyticsActorsByMovie>> call, Response<ArrayList<CinemalyticsActorsByMovie>> response)
-                {
-
-                }
-
-                @Override
-                public void onFailure(Call<ArrayList<CinemalyticsActorsByMovie>> call, Throwable t)
-                {
-
-                }
-            });
         }
     }
 
@@ -283,20 +275,25 @@ public class Movie extends AppCompatActivity implements AsyncResponse
         @Override
         public Object instantiateItem(final ViewGroup container, final int position)
         {
-            ImageView view = new ImageView(Movie.this);
+            LayoutInflater inflater = (LayoutInflater) container.getContext()
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            int resID=R.layout.custom_viewpager_layout;
+
+            View relativeLayoutViewPager=inflater.inflate(resID,container,false);
+            ImageView view = (ImageView)relativeLayoutViewPager.findViewById(R.id.imgThumbNail);
             ImageLoader.getInstance().displayImage(YoutubeSearch.THUMBNAILURL.get(position),view);
-            container.addView(view);
-
-            RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)container.getLayoutParams();
-            /*TextView textSongName=(TextView)actorStripPager.findViewById(R.id.vpCurrentSong);*/
-            layoutParams.addRule(RelativeLayout.BELOW, view.getId());
-            TextView textSongName=new TextView(Movie.this);
+/*
+            RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)view.getLayoutParams();
+            *//*TextView textSongName=(TextView)actorStripPager.findViewById(R.id.vpCurrentSong);*//*
+            layoutParams.addRule(RelativeLayout.BELOW, view.getId());*/
+            TextView textSongName=(TextView)relativeLayoutViewPager.findViewById(R.id.textSongName);
             textSongName.setText(songs.get(position));
-            textSongName.setTextColor(getResources().getColor(android.R.color.white));
-            textSongName.setLayoutParams(layoutParams);
-            container.addView(textSongName);
+            /*textSongName.setLayoutParams(layoutParams);*/
+            container.addView(relativeLayoutViewPager);
 
-            view.setOnClickListener(new View.OnClickListener()
+            System.out.println("<<SONG TEXT>>"+textSongName.getText().toString());
+            relativeLayoutViewPager.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
@@ -305,12 +302,10 @@ public class Movie extends AppCompatActivity implements AsyncResponse
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.setData(Uri.parse(YoutubeSearch.DIRECTYOUTUBELINKS.get(position)));
-                    TextView t=(TextView)container.getChildAt(position);
-                    System.out.println(t.getText().toString());
                     context.startActivity(intent);
                 }
             });
-            return view;
+            return relativeLayoutViewPager;
         }
 
         @Override
