@@ -39,6 +39,8 @@ public class YoutubeSearch extends AsyncTask<ArrayList<String>, Integer, Integer
      */
     private static YouTube youtube;
     public static ArrayList<String> LINKS;
+    public static ArrayList<String> THUMBNAILURL;
+    public static ArrayList<String> DIRECTYOUTUBELINKS;
 
     /**
      * Initialize a YouTube object to search for videos on YouTube. Then
@@ -59,6 +61,8 @@ public class YoutubeSearch extends AsyncTask<ArrayList<String>, Integer, Integer
         }*/
 
         LINKS=new ArrayList<String>();
+        THUMBNAILURL=new ArrayList<>();
+        DIRECTYOUTUBELINKS=new ArrayList<>();
         try
         {
             // This object is used to make YouTube Data API requests. The last
@@ -179,6 +183,10 @@ public class YoutubeSearch extends AsyncTask<ArrayList<String>, Integer, Integer
                 StringBuffer linkPart=new StringBuffer("<a href=https://www.youtube.com/watch?v=");
                 linkPart.append(rId.getVideoId()+">");
                 LINKS.add(linkPart.toString());
+                linkPart.delete(0,linkPart.length());
+                linkPart.append("https://www.youtube.com/watch?v="+rId.getVideoId());
+                DIRECTYOUTUBELINKS.add(linkPart.toString());
+                THUMBNAILURL.add(thumbnail.getUrl());
             }
         }
     }

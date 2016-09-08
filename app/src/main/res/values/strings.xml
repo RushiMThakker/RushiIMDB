@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">RushiIMDB</string>
-    <string name="text_overview">Overview:</string>
+    <string name="text_plot">Plot:</string>
     <string name="trailer">Trailer:</string>
     <string name="songs">Songs:</string>
+    <string name="actors">Actors:</string>
 </resources>

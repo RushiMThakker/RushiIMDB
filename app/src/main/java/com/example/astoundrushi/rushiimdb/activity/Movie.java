@@ -1,9 +1,15 @@
 package com.example.astoundrushi.rushiimdb.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,16 +20,21 @@ import android.text.method.LinkMovementMethod;
 import android.transition.ChangeImageTransform;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.astoundrushi.rushiimdb.PagerContainer;
 import com.example.astoundrushi.rushiimdb.R;
 import com.example.astoundrushi.rushiimdb.adapter.CustomAdapter;
+import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsActorsByMovie;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsClient;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsConstants;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsInterface;
@@ -37,10 +48,13 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.nostra13.universalimageloader.core.process.BitmapProcessor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -53,8 +67,10 @@ public class Movie extends AppCompatActivity implements AsyncResponse
     RecyclerView recyclerView;
     CustomAdapter recyclerViewAdapter;
     RecyclerView.LayoutManager recyclerViewLayoutManager;
-    ArrayList<String> songs;
+    public static ArrayList<String> songs;
+    PagerContainer actorStripPager,songStripPager;
     ArrayList<Double> songsDuration;
+    CinemalyticsInterface cinemalyticsInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -64,6 +80,7 @@ public class Movie extends AppCompatActivity implements AsyncResponse
         getWindow().setEnterTransition(new Fade());
         getWindow().setSharedElementEnterTransition(new ChangeImageTransform());*/
         setContentView(R.layout.activity_movie);
+        cinemalyticsInterface = CinemalyticsClient.getAdapter().create(CinemalyticsInterface.class);
         ButterKnife.bind(this);
         initUI();
     }
@@ -146,9 +163,7 @@ public class Movie extends AppCompatActivity implements AsyncResponse
         /*trailerLink.setText("<a href="+selectedMovie.getTrailerLink()+">"+selectedMovie.getTitle()+"Trailer</a>");*/
         trailerLink.setText(Html.fromHtml(link));
 
-        recyclerView=(RecyclerView) findViewById(R.id.recyclerViewSongs);
-
-        CinemalyticsInterface cinemalyticsInterface = CinemalyticsClient.getAdapter().create(CinemalyticsInterface.class);
+        /*recyclerView=(RecyclerView) findViewById(R.id.recyclerViewSongs);*/
 
         Call<ArrayList<CinemalyticsSongsByMovie>> callMoviesByYear = cinemalyticsInterface.getSongsOfMovie(selectedMovie.getId(),CinemalyticsConstants.TOKEN);
         callMoviesByYear.enqueue(new Callback<ArrayList<CinemalyticsSongsByMovie>>()
@@ -168,7 +183,6 @@ public class Movie extends AppCompatActivity implements AsyncResponse
                     songs.add(i,receivedSongs.get(i).getTitle());
                     songsDuration.add(i,receivedSongs.get(i).getDuration());
                 }
-
                 generateYoutubeLinks(songs);
             }
 
@@ -216,11 +230,106 @@ public class Movie extends AppCompatActivity implements AsyncResponse
                 ++i;
             }
 
-            recyclerView = (RecyclerView) findViewById(R.id.recyclerViewSongs);
+/*            recyclerView = (RecyclerView) findViewById(R.id.recyclerViewSongs);
             recyclerViewLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(recyclerViewLayoutManager);
             recyclerViewAdapter = new CustomAdapter(Movie.this,links,songsDuration);
-            recyclerView.setAdapter(recyclerViewAdapter);
+            recyclerView.setAdapter(recyclerViewAdapter);*/
+
+            songStripPager = (PagerContainer) findViewById(R.id.pager_container_songs);
+            actorStripPager = (PagerContainer) findViewById(R.id.pager_container_actors);
+
+            ViewPager pagerSongs = songStripPager.getViewPager();
+            ViewPager pagerActors=actorStripPager.getViewPager();
+
+            PagerAdapter adapterSongs = new MySongsPagerAdapter(Movie.this);
+            PagerAdapter adapterActors= new MyActorsPagerAdapter(Movie.this);
+            pagerSongs.setAdapter(adapterSongs);
+            //Necessary or the pagerSongs will only have one extra page to show
+            // make this at least however many pages you can see
+            pagerSongs.setOffscreenPageLimit(adapterSongs.getCount());
+            //A little space between pages
+            pagerSongs.setPageMargin(15);
+
+            //If hardware acceleration is enabled, you should also remove
+            // clipping on the pagerSongs for its children.
+            pagerSongs.setClipChildren(false);
+
+            Call<ArrayList<CinemalyticsActorsByMovie>> callActorsByMovie=cinemalyticsInterface.getActorsOfMovie(selectedMovie.getId(),CinemalyticsConstants.TOKEN);
+            callActorsByMovie.enqueue(new Callback<ArrayList<CinemalyticsActorsByMovie>>()
+            {
+                @Override
+                public void onResponse(Call<ArrayList<CinemalyticsActorsByMovie>> call, Response<ArrayList<CinemalyticsActorsByMovie>> response)
+                {
+
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<CinemalyticsActorsByMovie>> call, Throwable t)
+                {
+
+                }
+            });
         }
     }
+
+    private class MySongsPagerAdapter extends PagerAdapter
+    {
+        Context context;
+        MySongsPagerAdapter(Context context)
+        {
+            this.context=context;
+        }
+        @Override
+        public Object instantiateItem(final ViewGroup container, final int position)
+        {
+            ImageView view = new ImageView(Movie.this);
+            ImageLoader.getInstance().displayImage(YoutubeSearch.THUMBNAILURL.get(position),view);
+            container.addView(view);
+
+            RelativeLayout.LayoutParams layoutParams=(RelativeLayout.LayoutParams)container.getLayoutParams();
+            /*TextView textSongName=(TextView)actorStripPager.findViewById(R.id.vpCurrentSong);*/
+            layoutParams.addRule(RelativeLayout.BELOW, view.getId());
+            TextView textSongName=new TextView(Movie.this);
+            textSongName.setText(songs.get(position));
+            textSongName.setTextColor(getResources().getColor(android.R.color.white));
+            textSongName.setLayoutParams(layoutParams);
+            container.addView(textSongName);
+
+            view.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.setData(Uri.parse(YoutubeSearch.DIRECTYOUTUBELINKS.get(position)));
+                    TextView t=(TextView)container.getChildAt(position);
+                    System.out.println(t.getText().toString());
+                    context.startActivity(intent);
+                }
+            });
+            return view;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object)
+        {
+            container.removeView((View) object);
+        }
+
+        @Override
+        public int getCount()
+        {
+            return YoutubeSearch.THUMBNAILURL.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object)
+        {
+            return (view == object);
+        }
+    }
+
 }
