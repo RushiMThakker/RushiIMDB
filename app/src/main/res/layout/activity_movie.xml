@@ -57,7 +57,7 @@
                 android:id="@+id/viewLine"
                 android:layout_width="match_parent"
                 android:layout_height="10dp"
-                android:background="@android:color/white"/>
+                android:background="@android:color/darker_gray"/>
 
             <TextView
                 android:id="@+id/textOverview"
@@ -71,15 +71,13 @@
                 android:id="@+id/textMovieOverview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textOverview"
-                android:textColor="@android:color/white"/>
+                android:layout_below="@id/textOverview"/>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_above="@+id/textTrailer"
-                android:layout_below="@id/textMovieOverview"
-                android:background="@android:color/white"/>
+                android:layout_below="@id/textMovieOverview"/>
 
 
             <TextView
@@ -101,8 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_above="@+id/textActors"
-                android:layout_below="@id/trailerLink"
-                android:background="@android:color/white"/>
+                android:layout_below="@id/trailerLink"/>
 
 
             <TextView
@@ -117,8 +114,7 @@
                 android:id="@+id/pager_container_actors"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textActors"
-                android:background="#FFF">
+                android:layout_below="@id/textActors">
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/vpActors"
@@ -147,8 +143,7 @@
                 android:id="@+id/pager_container_songs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textSongs"
-                android:background="#FFF">
+                android:layout_below="@id/textSongs">
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/vpSongs"

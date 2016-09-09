@@ -188,7 +188,7 @@ public class Movie extends AppCompatActivity implements AsyncResponse
                 movieActors = response.body();
                 actorStripPager = (PagerContainer) findViewById(R.id.pager_container_actors);
                 ViewPager pagerActors=actorStripPager.getViewPager();
-                PagerAdapter adapterActors= new MyActorsPagerAdapter(Movie.this,movieActors);
+                PagerAdapter adapterActors= new MyActorsPagerAdapter(Movie.this,movieActors,Movie.this);
                 pagerActors.setAdapter(adapterActors);
                 pagerActors.setOffscreenPageLimit(adapterActors.getCount());
                 pagerActors.setPageMargin(15);

@@ -7,14 +7,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.ChangeImageTransform;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.view.Window;
 
 
 import com.example.astoundrushi.rushiimdb.R;
-import com.example.astoundrushi.rushiimdb.Transformations.*;
+import com.example.astoundrushi.rushiimdb.transformations.*;
 import com.example.astoundrushi.rushiimdb.cinemalytics.*;
 
 import java.util.ArrayList;
@@ -27,7 +23,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.astoundrushi.rushiimdb.Controller.Utils.convertDate;
+import static com.example.astoundrushi.rushiimdb.controller.Utils.convertDate;
 
 
 public class MainActivity extends AppCompatActivity implements MoviesPager.OnFragmentInteractionListener

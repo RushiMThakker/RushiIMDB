@@ -1,4 +1,4 @@
-package com.example.astoundrushi.rushiimdb.Transformations;
+package com.example.astoundrushi.rushiimdb.transformations;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.CardView;

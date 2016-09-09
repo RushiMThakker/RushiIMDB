@@ -3,7 +3,9 @@ package com.example.astoundrushi.rushiimdb.cinemalytics;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class CinemalyticsActorsByMovie
+import java.io.Serializable;
+
+public class CinemalyticsActorsByMovie implements Serializable
 {
 
     @SerializedName("Id")

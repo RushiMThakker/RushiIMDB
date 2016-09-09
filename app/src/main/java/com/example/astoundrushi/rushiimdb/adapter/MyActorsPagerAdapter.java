@@ -1,12 +1,13 @@
 package com.example.astoundrushi.rushiimdb.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
+import com.example.astoundrushi.rushiimdb.activity.Actor;
 import com.example.astoundrushi.rushiimdb.activity.Movie;
-import com.example.astoundrushi.rushiimdb.activity.YoutubeSearch;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsActorsByMovie;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -21,11 +22,13 @@ public class MyActorsPagerAdapter extends PagerAdapter
 {
     ArrayList<CinemalyticsActorsByMovie> movieActors;
     Movie movie;
+    Context context;
 
-    public MyActorsPagerAdapter(Movie movie, ArrayList<CinemalyticsActorsByMovie> movieActors)
+    public MyActorsPagerAdapter(Movie movie, ArrayList<CinemalyticsActorsByMovie> movieActors,Context context)
     {
         this.movieActors = movieActors;
         this.movie=movie;
+        this.context=context;
     }
 
     @Override
@@ -35,11 +38,22 @@ public class MyActorsPagerAdapter extends PagerAdapter
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, int position)
+    public Object instantiateItem(ViewGroup container, final int position)
     {
         CircleImageView view = new CircleImageView(movie.getApplicationContext());
         ImageLoader.getInstance().displayImage(movieActors.get(position).getProfilePath(),view);
         container.addView(view);
+
+        view.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent selectedActor=new Intent(context, Actor.class);
+                selectedActor.putExtra("Actor name",movieActors.get(position));
+                context.startActivity(selectedActor);
+            }
+        });
         return view;
     }
 
