@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.example.astoundrushi.rushiimdb.PagerContainer;
 import com.example.astoundrushi.rushiimdb.R;
-import com.example.astoundrushi.rushiimdb.adapter.CustomAdapter;
 import com.example.astoundrushi.rushiimdb.adapter.MyActorsPagerAdapter;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsActorsByMovie;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsClient;
@@ -48,9 +47,6 @@ public class Movie extends AppCompatActivity implements AsyncResponse
     ImageView selectedMoviePoster;
     private DisplayImageOptions options;
     CinemalyticsMovieByYear selectedMovie;
-    RecyclerView recyclerView;
-    CustomAdapter recyclerViewAdapter;
-    RecyclerView.LayoutManager recyclerViewLayoutManager;
     public static ArrayList<String> songs;
     PagerContainer actorStripPager,songStripPager;
     ArrayList<Double> songsDuration;
@@ -150,25 +146,28 @@ public class Movie extends AppCompatActivity implements AsyncResponse
 
         /*recyclerView=(RecyclerView) findViewById(R.id.recyclerViewSongs);*/
 
-        Call<ArrayList<CinemalyticsSongsByMovie>> callMoviesByYear = cinemalyticsInterface.getSongsOfMovie(selectedMovie.getId(),CinemalyticsConstants.TOKEN);
-        callMoviesByYear.enqueue(new Callback<ArrayList<CinemalyticsSongsByMovie>>()
+        Call<ArrayList<CinemalyticsSongsByMovie>> callSongsByMovie = cinemalyticsInterface.getSongsOfMovie(selectedMovie.getId(),CinemalyticsConstants.TOKEN);
+        callSongsByMovie.enqueue(new Callback<ArrayList<CinemalyticsSongsByMovie>>()
         {
 
             @Override
             public void onResponse(Call<ArrayList<CinemalyticsSongsByMovie>> call, Response<ArrayList<CinemalyticsSongsByMovie>> response)
             {
-                ArrayList<CinemalyticsSongsByMovie> receivedSongs;
-                songs=new ArrayList<String>();
-                songsDuration=new ArrayList<Double>();
-                /*receivedSongs=new ArrayList<CinemalyticsSongsByMovie>();*/
-                receivedSongs=response.body();
-
-                for(int i=0;i<receivedSongs.size();++i)
+                songs=null;
+                if(response.code()==200)
                 {
-                    songs.add(i,receivedSongs.get(i).getTitle());
-                    songsDuration.add(i,receivedSongs.get(i).getDuration());
+                    ArrayList<CinemalyticsSongsByMovie> receivedSongs;
+                    songs = new ArrayList<String>();
+                    songsDuration = new ArrayList<Double>();
+                    /*receivedSongs=new ArrayList<CinemalyticsSongsByMovie>();*/
+                    receivedSongs = response.body();
+
+                    for (int i = 0; i < receivedSongs.size(); ++i)
+                    {
+                        songs.add(i, receivedSongs.get(i).getTitle());
+                    }
+                    generateYoutubeLinks(songs);
                 }
-                generateYoutubeLinks(songs);
             }
 
             @Override
@@ -202,6 +201,13 @@ public class Movie extends AppCompatActivity implements AsyncResponse
 
             }
         });
+
+        if(songs==null)
+        {
+            songStripPager = (PagerContainer) findViewById(R.id.pager_container_songs);
+            songStripPager.setVisibility(View.GONE);
+            findViewById(R.id.textSongs).setVisibility(View.GONE);
+        }
     }
 
     private void generateYoutubeLinks(ArrayList<String> movieSongs)
@@ -248,7 +254,8 @@ public class Movie extends AppCompatActivity implements AsyncResponse
             recyclerView.setAdapter(recyclerViewAdapter);*/
 
             songStripPager = (PagerContainer) findViewById(R.id.pager_container_songs);
-
+            songStripPager.setVisibility(View.VISIBLE);
+            findViewById(R.id.textSongs).setVisibility(View.VISIBLE);
             ViewPager pagerSongs = songStripPager.getViewPager();
 
             PagerAdapter adapterSongs = new MySongsPagerAdapter(Movie.this);

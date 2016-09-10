@@ -5,45 +5,40 @@ import android.content.Intent;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.example.astoundrushi.rushiimdb.activity.Actor;
-import com.example.astoundrushi.rushiimdb.activity.Movie;
-import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsActorsByMovie;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * Created by Astound Rushi on 9/7/2016.
+ * Created by Astound Rushi on 9/10/2016.
  */
-public class MyActorsPagerAdapter extends PagerAdapter
+public class ActorImagesAdapter extends PagerAdapter
 {
-    ArrayList<CinemalyticsActorsByMovie> movieActors;
-    Movie movie;
-    Context context;
+    /*ArrayList<String> actorImagesURL;*/
+    Actor actor;
 
-    public MyActorsPagerAdapter(Movie movie, ArrayList<CinemalyticsActorsByMovie> movieActors,Context context)
+    public ActorImagesAdapter(Actor actor)
     {
-        this.movieActors = movieActors;
-        this.movie=movie;
-        this.context=context;
+        this.actor = actor;
     }
 
     @Override
     public int getCount()
     {
-        return movieActors.size();
+        return Actor.descriptionURL.size();
     }
 
     @Override
-    public Object instantiateItem(ViewGroup container, final int position)
+    public Object instantiateItem(ViewGroup container, int position)
     {
-        CircleImageView view = new CircleImageView(movie.getApplicationContext());
-        ImageLoader.getInstance().displayImage(movieActors.get(position).getProfilePath(),view);
+        ImageView view = new ImageView(actor.getApplicationContext());
+        ImageLoader.getInstance().displayImage(Actor.descriptionURL.get(position), view);
         container.addView(view);
-
+/*
         view.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -53,7 +48,7 @@ public class MyActorsPagerAdapter extends PagerAdapter
                 selectedActor.putExtra("ActorModelClass name",movieActors.get(position));
                 context.startActivity(selectedActor);
             }
-        });
+        });*/
         return view;
     }
 
@@ -66,6 +61,6 @@ public class MyActorsPagerAdapter extends PagerAdapter
     @Override
     public boolean isViewFromObject(View view, Object object)
     {
-        return (view==object);
+        return (view == object);
     }
 }

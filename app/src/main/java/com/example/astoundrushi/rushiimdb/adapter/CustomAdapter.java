@@ -1,3 +1,4 @@
+/*
 package com.example.astoundrushi.rushiimdb.adapter;
 
 import android.content.Context;
@@ -13,9 +14,11 @@ import com.example.astoundrushi.rushiimdb.R;
 
 import java.util.ArrayList;
 
+*/
 /**
  * Created by Astound Rushi on 9/5/2016.
- */
+ *//*
+
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Holder>
 {
     ArrayList songs, songDuration;
@@ -73,3 +76,4 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Holder>
         }
     }
 }
+*/

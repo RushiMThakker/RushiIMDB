@@ -41,6 +41,7 @@ public class YoutubeSearch extends AsyncTask<ArrayList<String>, Integer, Integer
     public static ArrayList<String> LINKS;
     public static ArrayList<String> THUMBNAILURL;
     public static ArrayList<String> DIRECTYOUTUBELINKS;
+    private String APIKEY="AIzaSyBZ8Br7lBRnFy4WAfTBMLL5FxELs9AcMtw";
 
     /**
      * Initialize a YouTube object to search for videos on YouTube. Then
@@ -88,7 +89,7 @@ public class YoutubeSearch extends AsyncTask<ArrayList<String>, Integer, Integer
             // non-authenticated requests. See:
             // https://console.developers.google.com/
 
-            search.setKey("AIzaSyBZ8Br7lBRnFy4WAfTBMLL5FxELs9AcMtw");
+            search.setKey(APIKEY);
             for (int i = 0; i < querySongs.size(); ++i)
             {
                 search.setQ(querySongs.get(i));
