@@ -1,10 +1,10 @@
-
-package com.example.astoundrushi.rushiimdb.wiki;
+package com.example.astoundrushi.rushiimdb.wiki.actor_extract;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class _22411898 {
+public class ActorModelClass
+{
 
     @SerializedName("pageid")
     @Expose
