@@ -12,6 +12,12 @@ import com.example.astoundrushi.rushiimdb.PagerContainer;
 import com.example.astoundrushi.rushiimdb.R;
 import com.example.astoundrushi.rushiimdb.adapter.ActorImagesAdapter;
 import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsActorsByMovie;
+import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsClient;
+import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsConstants;
+import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsInterface;
+import com.example.astoundrushi.rushiimdb.cinemalytics.CinemalyticsMoviesByActor;
+import com.example.astoundrushi.rushiimdb.getty_images.GettyImagesClient;
+import com.example.astoundrushi.rushiimdb.getty_images.GettyImagesInterface;
 import com.example.astoundrushi.rushiimdb.wiki.actor_extract.ActorModelClass;
 import com.example.astoundrushi.rushiimdb.wiki.actor_extract.WikiActorDesc;
 import com.example.astoundrushi.rushiimdb.wiki.WikiClient;
@@ -26,21 +32,22 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class Actor extends AppCompatActivity implements AsyncResponse
+public class Actor extends AppCompatActivity implements AsyncResponse,AsyncResponseMoviesParse
 {
     CinemalyticsActorsByMovie selectedActor;
-    public static ArrayList<String> imageCollection;
-    public static ArrayList<String> descriptionURL;
+    public static ArrayList<String> imageCollection = null;
+    public static ArrayList<String> descriptionURL = null;
     WikiInterface wikiInterface;
-
+    GettyImagesInterface gettyImagesInterface;
+    ArrayList<CinemalyticsMoviesByActor> cinemalyticsMoviesByActorArrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_actor);
 
-        descriptionURL=new ArrayList<>();
-        imageCollection=new ArrayList<>();
+        descriptionURL = new ArrayList<>();
+        imageCollection = new ArrayList<>();
 
         initUI();
     }
@@ -77,13 +84,43 @@ public class Actor extends AppCompatActivity implements AsyncResponse
             }
         });
 
-        ActorImageTitleAsync actorImageTitleAsync = new ActorImageTitleAsync(wikiInterface, selectedActor);
+        Retrofit gettyImagesAdapter = GettyImagesClient.getAdapter();
+        gettyImagesInterface = gettyImagesAdapter.create(GettyImagesInterface.class);
+/*       ActorImageTitleAsync actorImageTitleAsync = new ActorImageTitleAsync(wikiInterface, selectedActor);
         actorImageTitleAsync.delegateActorImageTitle=this;
-        actorImageTitleAsync.execute();
+        actorImageTitleAsync.execute();*/
 
+        GettyImagesActorAsync gettyImagesActorAsync = new GettyImagesActorAsync(selectedActor, gettyImagesInterface);
+        gettyImagesActorAsync.delegateActorGettyImage = this;
+        gettyImagesActorAsync.execute();
+
+        cinemalyticsMoviesByActorArrayList = new ArrayList<>();
+
+        CinemalyticsInterface cinemalyticsInterface = CinemalyticsClient.getAdapter().create(CinemalyticsInterface.class);
+
+        Call<ArrayList<CinemalyticsMoviesByActor>> cinemalyticsMoviesByActorCall = cinemalyticsInterface.getMoviesOfActor(selectedActor.getId(), CinemalyticsConstants.TOKEN);
+
+        cinemalyticsMoviesByActorCall.enqueue(new Callback<ArrayList<CinemalyticsMoviesByActor>>()
+        {
+            @Override
+            public void onResponse(Call<ArrayList<CinemalyticsMoviesByActor>> call, Response<ArrayList<CinemalyticsMoviesByActor>> response)
+            {
+                cinemalyticsMoviesByActorArrayList=response.body();
+
+                ArrayList<CinemalyticsMoviesByActor> upcomingMoviesByActor=new ArrayList<CinemalyticsMoviesByActor>();
+                ArrayList<CinemalyticsMoviesByActor> currentMoviesByActor=new ArrayList<CinemalyticsMoviesByActor>();
+                ArrayList<CinemalyticsMoviesByActor> mostPopularMoviesByActor=new ArrayList<CinemalyticsMoviesByActor>();
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<CinemalyticsMoviesByActor>> call, Throwable t)
+            {
+
+            }
+        });
     }
 
-    @Override
+/*    @Override
     public void processFinish(Boolean output)
     {
         if (output == true)
@@ -101,6 +138,36 @@ public class Actor extends AppCompatActivity implements AsyncResponse
             actorImagesPager.setOffscreenPageLimit(actorImagesAdapter.getCount());
             actorImagesPager.setPageMargin(15);
             actorImagesPager.setClipChildren(false);
+        }
+    }*/
+
+    @Override
+    public void processFinish(Boolean output)
+    {
+        PagerContainer actorImagesStriper = (PagerContainer) findViewById(R.id.vpActorPhotosContainer);
+        ActorImagesAdapter actorImagesAdapter = new ActorImagesAdapter(Actor.this);
+        ViewPager actorImagesPager = actorImagesStriper.getViewPager();
+        actorImagesPager.setAdapter(actorImagesAdapter);
+        actorImagesPager.setOffscreenPageLimit(actorImagesAdapter.getCount());
+        actorImagesPager.setPageMargin(15);
+        actorImagesPager.setClipChildren(false);
+    }
+
+    @Override
+    public void completeProcess(String typeOfMovies)
+    {
+
+        if(typeOfMovies.equals("Upcoming"))
+        {
+
+        }
+        else if(typeOfMovies.equals("Current"))
+        {
+
+        }
+        else if(typeOfMovies.equals("Most Popular"))
+        {
+
         }
     }
 }

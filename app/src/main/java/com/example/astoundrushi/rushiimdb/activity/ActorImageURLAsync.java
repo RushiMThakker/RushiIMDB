@@ -28,7 +28,6 @@ public class ActorImageURLAsync extends AsyncTask
     @Override
     protected Object doInBackground(Object[] params)
     {
-        android.os.Debug.waitForDebugger();
         for (int i = 0; i < Actor.imageCollection.size(); ++i)
         {
             Call<ActorImagesURLCollection> actorImagesURLCollectionCall = wikiInterface.getAllImagesURL("json", "query", "imageinfo", "Image:" + Actor.imageCollection.get(i), "url");

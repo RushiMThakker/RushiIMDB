@@ -25,6 +25,8 @@
         </activity>
         <activity android:name=".activity.Actor">
         </activity>
+        <activity android:name=".activity.ActorFullImage">
+        </activity>
     </application>
 
 </manifest>

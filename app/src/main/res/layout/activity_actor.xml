@@ -33,14 +33,67 @@
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/vpActorPhotos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:foregroundGravity="center_horizontal"/>
         </com.example.astoundrushi.rushiimdb.PagerContainer>
-
+<!--
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerActorMovies"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/vpActorPhotosContainer"/>
+            android:layout_below="@id/vpActorPhotosContainer"/>-->
+
+        <com.example.astoundrushi.rushiimdb.PagerContainer
+            android:id="@+id/vpActorPhotosContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textActorDescription">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vpActorPhotos"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:foregroundGravity="center_horizontal"/>
+        </com.example.astoundrushi.rushiimdb.PagerContainer>
+
+        <com.example.astoundrushi.rushiimdb.PagerContainer
+            android:id="@+id/vpActorUpcomingMoviesPhotosContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textActorDescription">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vpActorUpcomingMoviesPhotos"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:foregroundGravity="center_horizontal"/>
+        </com.example.astoundrushi.rushiimdb.PagerContainer>
+
+        <com.example.astoundrushi.rushiimdb.PagerContainer
+            android:id="@+id/vpActorCurrentMoviesPhotosContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textActorDescription">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vpActorCurrentMoviesPhotos"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:foregroundGravity="center_horizontal"/>
+        </com.example.astoundrushi.rushiimdb.PagerContainer>
+
+        <com.example.astoundrushi.rushiimdb.PagerContainer
+            android:id="@+id/vpActorMostPopularMoviesPhotosContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textActorDescription">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/vpActorMostPopularMoviesPhotos"
+                android:layout_width="100dp"
+                android:layout_height="150dp"
+                android:foregroundGravity="center_horizontal"/>
+        </com.example.astoundrushi.rushiimdb.PagerContainer>
     </RelativeLayout>
 </android.support.v4.widget.NestedScrollView>

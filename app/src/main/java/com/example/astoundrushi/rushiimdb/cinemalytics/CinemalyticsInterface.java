@@ -23,4 +23,7 @@ public interface CinemalyticsInterface
 
     @GET("movie/{movieid}/actors/")
     Call<ArrayList<CinemalyticsActorsByMovie>> getActorsOfMovie(@Path("movieid") String movieID, @Query("auth_token") String token);
+
+    @GET("/actor/{actorid}/movies/")
+    Call<ArrayList<CinemalyticsMoviesByActor>> getMoviesOfActor(@Path("actorid") String actorID, @Query("auth_token") String token);
 }

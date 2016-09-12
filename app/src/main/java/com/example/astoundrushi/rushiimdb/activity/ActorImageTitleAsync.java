@@ -19,8 +19,8 @@ import retrofit2.Response;
 public class ActorImageTitleAsync extends AsyncTask
 {
     public AsyncResponse delegateActorImageTitle = null;
-    WikiInterface wikiInterface;
     CinemalyticsActorsByMovie selectedActor;
+    WikiInterface wikiInterface;
 
     public ActorImageTitleAsync(WikiInterface wikiInterface, CinemalyticsActorsByMovie selectedActor)
     {
@@ -32,7 +32,6 @@ public class ActorImageTitleAsync extends AsyncTask
     @Override
     protected Object doInBackground(Object[] params)
     {
-        android.os.Debug.waitForDebugger();
         Call<ActorImagesCollection> callActorImagesCollection = wikiInterface.getAllImagesTitle("json", "query", "allimages", "5", selectedActor.getName(), "dimensions%7Cmime");
         callActorImagesCollection.enqueue(new Callback<ActorImagesCollection>()
         {
