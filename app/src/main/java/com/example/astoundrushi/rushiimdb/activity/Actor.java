@@ -32,7 +32,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class Actor extends AppCompatActivity implements AsyncResponse,AsyncResponseMoviesParse
+public class Actor extends AppCompatActivity implements AsyncResponse, AsyncResponseMoviesParse
 {
     CinemalyticsActorsByMovie selectedActor;
     public static ArrayList<String> imageCollection = null;
@@ -40,6 +40,10 @@ public class Actor extends AppCompatActivity implements AsyncResponse,AsyncRespo
     WikiInterface wikiInterface;
     GettyImagesInterface gettyImagesInterface;
     ArrayList<CinemalyticsMoviesByActor> cinemalyticsMoviesByActorArrayList;
+    UpcomingMoviesByActor upcomingMoviesByActorAsync = new UpcomingMoviesByActor();
+    CurrentMoviesByActor currentMoviesByActorAsync = new CurrentMoviesByActor();
+    MostPopularMoviesByActor mostPopularMoviesByActor = new MostPopularMoviesByActor();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -100,16 +104,21 @@ public class Actor extends AppCompatActivity implements AsyncResponse,AsyncRespo
 
         Call<ArrayList<CinemalyticsMoviesByActor>> cinemalyticsMoviesByActorCall = cinemalyticsInterface.getMoviesOfActor(selectedActor.getId(), CinemalyticsConstants.TOKEN);
 
+        upcomingMoviesByActorAsync.asyncResponseMoviesParse = Actor.this;
+
         cinemalyticsMoviesByActorCall.enqueue(new Callback<ArrayList<CinemalyticsMoviesByActor>>()
         {
             @Override
             public void onResponse(Call<ArrayList<CinemalyticsMoviesByActor>> call, Response<ArrayList<CinemalyticsMoviesByActor>> response)
             {
-                cinemalyticsMoviesByActorArrayList=response.body();
+                cinemalyticsMoviesByActorArrayList = response.body();
 
-                ArrayList<CinemalyticsMoviesByActor> upcomingMoviesByActor=new ArrayList<CinemalyticsMoviesByActor>();
-                ArrayList<CinemalyticsMoviesByActor> currentMoviesByActor=new ArrayList<CinemalyticsMoviesByActor>();
-                ArrayList<CinemalyticsMoviesByActor> mostPopularMoviesByActor=new ArrayList<CinemalyticsMoviesByActor>();
+                ArrayList<CinemalyticsMoviesByActor> upcomingMoviesByActor = new ArrayList<CinemalyticsMoviesByActor>();
+                ArrayList<CinemalyticsMoviesByActor> currentMoviesByActor = new ArrayList<CinemalyticsMoviesByActor>();
+                ArrayList<CinemalyticsMoviesByActor> mostPopularMoviesByActor = new ArrayList<CinemalyticsMoviesByActor>();
+
+
+                upcomingMoviesByActorAsync.execute(cinemalyticsMoviesByActorArrayList);
             }
 
             @Override
@@ -157,15 +166,18 @@ public class Actor extends AppCompatActivity implements AsyncResponse,AsyncRespo
     public void completeProcess(String typeOfMovies)
     {
 
-        if(typeOfMovies.equals("Upcoming"))
+        if (typeOfMovies.equals("Upcoming"))
         {
 
-        }
-        else if(typeOfMovies.equals("Current"))
+        } else if (typeOfMovies.equals("Current"))
         {
-
-        }
-        else if(typeOfMovies.equals("Most Popular"))
+            int i = 0;
+            while (UpcomingMoviesByActor.upcomingMoviesByActor.iterator().hasNext())
+            {
+                System.out.println("<<UPCOMING MOVIES>>" + UpcomingMoviesByActor.upcomingMoviesByActor.get(i).getOriginalTitle());
+                ++i;
+            }
+        } else if (typeOfMovies.equals("Most Popular"))
         {
 
         }
